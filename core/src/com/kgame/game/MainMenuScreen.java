@@ -6,6 +6,8 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.io.FileNotFoundException;
+
 public class MainMenuScreen implements Screen {
     final KGame game;
     OrthographicCamera camera;
@@ -46,7 +48,11 @@ public class MainMenuScreen implements Screen {
 
         if (Gdx.input.isTouched()) {
             menuMusic.stop();
-            game.setScreen(new KGameScreen(game));
+            try {
+                game.setScreen(new KGameScreen(game));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             dispose();
         }
     }
