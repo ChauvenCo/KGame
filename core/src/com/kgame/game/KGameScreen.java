@@ -12,11 +12,8 @@ import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -26,19 +23,21 @@ public class KGameScreen implements Screen {
     Random randomGenerator;
     OrthographicCamera camera;
 
-    HashMap<String, Texture> textureMap = new HashMap<>();
-    FileHandle[] levelsList;
-    Reader firstMap, secondMap;
-    Integer mapPosition, mapMoveSpeed;
-    Rectangle cell;
-
-    Music inGameMusic;
+    HashMap<String, Texture> textureMap;
     Integer highScore, score;
     Long scoreLastSecond;
 
+    FileHandle[] levelsFileList;
+    HashMap<String, Level> levelsMap;
+    Level firstMap, secondMap;
+
+    Music inGameMusic;
+    Float mapPosition, mapMoveSpeed;
+    Rectangle cell;
+
     Rectangle player;
-    Boolean reversing;
-    Integer reverseIncrement;
+    Boolean reversing, noJoke;
+    Float reverseIncrement;
 
     public KGameScreen(KGame kgame) throws FileNotFoundException {
         this.game = kgame;
@@ -48,6 +47,7 @@ public class KGameScreen implements Screen {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, ScreenSize.width, ScreenSize.height);
 
+        textureMap = new HashMap<>();
         JsonReader json = new JsonReader();
         JsonValue base = json.parse(Gdx.files.internal("Configuration/configuration.json"));
 
@@ -58,11 +58,28 @@ public class KGameScreen implements Screen {
             );
         }
 
-        levelsList = Gdx.files.internal("Maps").list();
-        firstMap = Gdx.files.internal("Maps/KMap0.txt").reader();
-        secondMap = Gdx.files.internal("Maps/KMap11.txt").reader();
-        mapPosition = 0;
-        mapMoveSpeed = ScreenSize.iheight / 144;
+        highScore = base.getInt("high-score");
+        score = 0;
+        scoreLastSecond = TimeUtils.millis();
+
+        levelsMap = new HashMap<>();
+        Level level;
+        levelsFileList = Gdx.files.internal("Maps").list();
+
+        for (FileHandle levelFile: levelsFileList)
+        {
+            base = json.parse(levelFile);
+            level = new Level(base.getInt("width"), base.getInt("height"));
+            for (int index = 0; index < level.GetWidth() * level.GetHeight(); index++) {
+                level.AddCell(base.get("blocks").getInt(index));
+            }
+            levelsMap.put(base.getString("name"), level);
+        }
+
+        firstMap = levelsMap.get("Premium-Empty");
+        secondMap = levelsMap.get("Premium-BoostDefault");
+        mapPosition = 0.0f;
+        mapMoveSpeed = ScreenSize.height / 240.0f;
 
         cell = new Rectangle();
         cell.width = ScreenSize.height / 12.0f;
@@ -72,18 +89,15 @@ public class KGameScreen implements Screen {
         inGameMusic.setLooping(true);
         inGameMusic.play();
 
-        highScore = base.getInt("high-score");
-        score = 0;
-        scoreLastSecond = TimeUtils.millis();
-
         player = new Rectangle();
-        player.width = ScreenSize.height / 9.0f;
-        player.height = ScreenSize.height / 7.5f;
+        player.width = ScreenSize.height / 12.0f;
+        player.height = ScreenSize.height / 10.0f;
         player.x = ScreenSize.height / 12.0f;
-        player.y = player.height;
+        player.y = cell.height;
 
         reversing = false;
-        reverseIncrement = -mapMoveSpeed;
+        reverseIncrement = ScreenSize.height / 72.0f + mapMoveSpeed;
+        noJoke = true;
     }
 
     @Override
@@ -97,20 +111,17 @@ public class KGameScreen implements Screen {
 
         if (Gdx.input.justTouched()) {
             reversing = true;
-            if (reverseIncrement > 0) reverseIncrement = -mapMoveSpeed;
-            else reverseIncrement = mapMoveSpeed;
+            if (reverseIncrement > 0) reverseIncrement = -(ScreenSize.height / 72.0f + mapMoveSpeed);
+            else reverseIncrement = ScreenSize.height / 72.0f + mapMoveSpeed;
         }
 
         mapPosition += mapMoveSpeed;
-        if (mapPosition >= ScreenSize.iwidth)
+        if (mapPosition >= firstMap.GetWidth() * cell.width)
         {
-            mapPosition = 0;
+            //mapPosition = firstMap.GetWidth() * cell.width - ScreenSize.width;
+            mapPosition = 0.0f;
             firstMap = secondMap;
-            try {
-                secondMap = new FileReader(levelsList[randomGenerator.nextInt(levelsList.length)].file());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            secondMap = (Level)levelsMap.values().toArray()[randomGenerator.nextInt(levelsMap.values().toArray().length)];
         }
 
         if (reversing) reversing = applyGravity();
@@ -120,13 +131,13 @@ public class KGameScreen implements Screen {
         game.batch.begin();
 
         try {
-            drawMap(firstMap, 0.0f);
-            drawMap(secondMap, ScreenSize.width);
+            drawMap(firstMap, 0.0f - mapPosition);
+            drawMap(secondMap, firstMap.GetWidth() * cell.width - mapPosition);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        game.font.draw(game.batch, "Score : " + score, ScreenSize.width * 0.05f, ScreenSize.height * 0.95f);
+        game.font.draw(game.batch, "Score : " + score, ScreenSize.width * 0.05f, ScreenSize.height * 0.97f);
         if (reverseIncrement < 0) game.batch.draw(textureMap.get("Player"), player.x, player.y, player.width, player.height);
         else game.batch.draw(textureMap.get("Player-reverse"), player.x, player.y, player.width, player.height);
 
@@ -158,49 +169,40 @@ public class KGameScreen implements Screen {
 
         inGameMusic.stop();
         inGameMusic.dispose();
-        try {
-            firstMap.close();
-            secondMap.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    protected void increaseScoreAndSpeed()
-    {
+    protected void increaseScoreAndSpeed() {
         score++;
-        mapMoveSpeed += ScreenSize.iheight / 720;
+        mapMoveSpeed += ScreenSize.height / 1480.0f;
         scoreLastSecond = TimeUtils.millis();
     }
 
     protected Boolean applyGravity() {
         player.y += reverseIncrement;
-        if (player.y < player.height)
+        if (player.y < cell.height)
         {
-            player.y = player.height;
+            player.y = cell.height;
             return false;
         }
-        if (player.y > ScreenSize.height * 0.9f - player.height)
+        if (player.y > ScreenSize.height - player.height - cell.height)
         {
-            player.y = ScreenSize.height * 0.9f - player.height;
+            player.y = ScreenSize.height - player.height - cell.height;
             return false;
         }
         return true;
     }
 
-    protected void drawMap(Reader file, Float offset) throws IOException {
-        BufferedReader reader = new BufferedReader(file);
-        int block, x;
-        for (int y = 0; y < 12; y++)
+    protected void drawMap(Level level, Float offset) throws IOException {
+        int block;
+        for (int y = 0; y < level.GetHeight(); y++)
         {
-            x = 0;
-            for (String blockWord: reader.readLine().split(" "))
+            for (int x = 0; x < level.GetWidth(); x++)
             {
-                block = Integer.parseInt(blockWord);
+                block = level.GetCell(y*level.GetWidth() + x);
                 if (block != 0)
                 {
                     cell.x = x * ScreenSize.height / 12.0f + offset;
-                    cell.y = y * ScreenSize.height / 12.0f;
+                    cell.y = ScreenSize.height - cell.height - (y * ScreenSize.height / 12.0f);
 
                     if (block == 1) game.batch.draw(textureMap.get("Wall"), cell.x, cell.y, cell.width, cell.height);
                     else if (block == 2) game.batch.draw(textureMap.get("Gold"), cell.x, cell.y, cell.width, cell.height);
@@ -211,9 +213,7 @@ public class KGameScreen implements Screen {
                     else if (block == 7) game.batch.draw(textureMap.get("Benjamin"), cell.x, cell.y, cell.width, cell.height);
                     else if (block == 9) game.batch.draw(textureMap.get("Ground"), cell.x, cell.y, cell.width, cell.height);
                 }
-                x++;
             }
         }
-        reader.close();
     }
 }
