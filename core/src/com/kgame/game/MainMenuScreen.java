@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.io.FileNotFoundException;
-
+// TODO: Revoir l'écran d'accueil
 public class MainMenuScreen implements Screen {
     final KGame game;
     OrthographicCamera camera;

@@ -1,6 +1,6 @@
 {
   "high-score": 327,
-  "number": 11,
+  "number": 12,
   "names": [
     "Player",
     "Player-reverse",
@@ -11,6 +11,7 @@
     "Speed",
     "Reverse",
     "Void",
+    "VoidDisable",
     "Ground",
     "Wall"
   ],
@@ -24,6 +25,7 @@
     "Textures/KCase-Speed.jpg",
     "Textures/KCase-Reverse.jpg",
     "Textures/KCase-Void.jpg",
+    "Textures/KCase-VoidDisable.jpg",
     "Textures/KCase-Ground.jpg",
     "Textures/KCase-Wall.jpg"
   ]

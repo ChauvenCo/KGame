@@ -39,6 +39,8 @@ public class KGameScreen implements Screen {
     Boolean reversing, noJoke;
     Float reverseIncrement;
 
+    Boolean boostActivated, voidActivated;
+
     public KGameScreen(KGame kgame) throws FileNotFoundException {
         this.game = kgame;
         game.font.getData().setScale(2.5f);
@@ -96,13 +98,15 @@ public class KGameScreen implements Screen {
         player.y = cell.height;
 
         reversing = false;
-        reverseIncrement = ScreenSize.height / 72.0f + mapMoveSpeed;
+        reverseIncrement = -ScreenSize.height / 72.0f - mapMoveSpeed;
         noJoke = true;
+
+        boostActivated = false;
+        voidActivated = false;
     }
 
     @Override
     public void show() {
-
     }
 
     @Override
@@ -138,7 +142,7 @@ public class KGameScreen implements Screen {
         }
 
         game.font.draw(game.batch, "Score : " + score, ScreenSize.width * 0.05f, ScreenSize.height * 0.97f);
-        if (reverseIncrement < 0) game.batch.draw(textureMap.get("Player"), player.x, player.y, player.width, player.height);
+        if (reverseIncrement < 0.0f) game.batch.draw(textureMap.get("Player"), player.x, player.y, player.width, player.height);
         else game.batch.draw(textureMap.get("Player-reverse"), player.x, player.y, player.width, player.height);
 
         game.batch.end();
@@ -146,6 +150,10 @@ public class KGameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        ScreenSize.height = height;
+        ScreenSize.width = width;
+        ScreenSize.iheight = height;
+        ScreenSize.iwidth = width;
     }
 
     @Override
@@ -173,6 +181,7 @@ public class KGameScreen implements Screen {
 
     protected void increaseScoreAndSpeed() {
         score++;
+        if (boostActivated) score++;
         mapMoveSpeed += ScreenSize.height / 1480.0f;
         scoreLastSecond = TimeUtils.millis();
     }
@@ -192,6 +201,21 @@ public class KGameScreen implements Screen {
         return true;
     }
 
+    protected void applyReverse() {
+        if (reversing)
+        {
+            if (reverseIncrement > 0.0f) player.y = ScreenSize.height - player.height - cell.height;
+            else player.y = cell.height;
+            reversing = false;
+        }
+        else
+        {
+            if (player.y < ScreenSize.height / 2.0f) player.y = ScreenSize.height - player.height - cell.height;
+            else player.y = cell.height;
+            reverseIncrement = -reverseIncrement;
+        }
+    }
+
     protected void drawMap(Level level, Float offset) throws IOException {
         int block;
         for (int y = 0; y < level.GetHeight(); y++)
@@ -204,16 +228,63 @@ public class KGameScreen implements Screen {
                     cell.x = x * ScreenSize.height / 12.0f + offset;
                     cell.y = ScreenSize.height - cell.height - (y * ScreenSize.height / 12.0f);
 
-                    if (block == 1) game.batch.draw(textureMap.get("Wall"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 2) game.batch.draw(textureMap.get("Gold"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 3) game.batch.draw(textureMap.get("Reverse"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 4) game.batch.draw(textureMap.get("Speed"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 5) game.batch.draw(textureMap.get("Void"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 6) game.batch.draw(textureMap.get("Boost"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 7) game.batch.draw(textureMap.get("Benjamin"), cell.x, cell.y, cell.width, cell.height);
-                    else if (block == 9) game.batch.draw(textureMap.get("Ground"), cell.x, cell.y, cell.width, cell.height);
+                    if (player.overlaps(cell))
+                    {
+                        if (block == 1)
+                        {
+                            Gdx.app.exit();
+                            System.exit(-1);
+                            // TODO: écran de fin de partie
+                        }
+                        else if (block == 2)
+                        {
+                            if (mapMoveSpeed > 0.0f && !boostActivated) mapMoveSpeed -= ScreenSize.height / 740.0f;
+                            mapPosition += cell.x;
+                        }
+                        else if (block == 3) applyReverse();
+                        else if (block == 4)
+                        {
+                            mapMoveSpeed += ScreenSize.height / 1480.0f;
+                            mapPosition += cell.x;
+                        }
+                        else if (block == 5)
+                        {
+                            applyReverse();
+                            voidActivated = !voidActivated;
+                        }
+                        else if (block == 6)
+                        {
+                            applyReverse();
+                            if (!boostActivated) mapMoveSpeed += (ScreenSize.height / 1480.0f);
+                            else mapMoveSpeed -= ScreenSize.height / 740.0f;
+                            boostActivated = !boostActivated;
+                        }
+                        else if (block == 7)
+                        {
+                            mapMoveSpeed = 0.0f;
+                            mapPosition += cell.x;
+                        }
+                    }
+
+                    if (voidActivated)
+                    {
+                        if (block == 5) game.batch.draw(textureMap.get("VoidDisable"), cell.x, cell.y, cell.width, cell.height);
+                        else game.batch.draw(textureMap.get("Void"), cell.x, cell.y, cell.width, cell.height);
+                    }
+                    else
+                    {
+                        if (block == 1) game.batch.draw(textureMap.get("Wall"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 2) game.batch.draw(textureMap.get("Gold"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 3) game.batch.draw(textureMap.get("Reverse"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 4) game.batch.draw(textureMap.get("Speed"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 5) game.batch.draw(textureMap.get("Void"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 6) game.batch.draw(textureMap.get("Boost"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 7) game.batch.draw(textureMap.get("Benjamin"), cell.x, cell.y, cell.width, cell.height);
+                        else if (block == 9) game.batch.draw(textureMap.get("Ground"), cell.x, cell.y, cell.width, cell.height);
+                    }
                 }
             }
         }
+        if (mapMoveSpeed < 0.0f) mapMoveSpeed = 0.0f;
     }
 }
