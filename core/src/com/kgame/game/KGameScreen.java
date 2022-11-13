@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -232,14 +233,27 @@ public class KGameScreen implements Screen {
                     {
                         if (block == 1)
                         {
-                            Gdx.app.exit();
-                            System.exit(-1);
-                            // TODO: écran de fin de partie
+                            /*Gdx.app.exit();
+                            System.exit(-1);*/
+
+                            if (score > highScore)
+                            {
+                                highScore = score;
+                                /*JsonWriter json = new JsonWriter(Gdx.files.internal("Configuration/configuration.json").writer(true));
+                                json.set("high-score", highScore);*/
+                            }
+
+                            inGameMusic.stop();
+                            game.setScreen(new EndGameScreen(game, score, highScore));
+                            dispose();
                         }
                         else if (block == 2)
                         {
-                            if (mapMoveSpeed > 0.0f && !boostActivated) mapMoveSpeed -= ScreenSize.height / 740.0f;
-                            mapPosition += cell.x;
+                            if (!boostActivated)
+                            {
+                                if (mapMoveSpeed > 0.0f) mapMoveSpeed -= ScreenSize.height / 740.0f;
+                                mapPosition += cell.x;
+                            }
                         }
                         else if (block == 3) applyReverse();
                         else if (block == 4)
@@ -254,6 +268,7 @@ public class KGameScreen implements Screen {
                         }
                         else if (block == 6)
                         {
+                            if (reversing) applyReverse();
                             applyReverse();
                             if (!boostActivated) mapMoveSpeed += (ScreenSize.height / 1480.0f);
                             else mapMoveSpeed -= ScreenSize.height / 740.0f;
