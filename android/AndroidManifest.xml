@@ -23,5 +23,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.kgame.game.EndGameActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
+        <activity
+            android:name="com.kgame.game.MainMenuActivity"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
     </application>
 </manifest>

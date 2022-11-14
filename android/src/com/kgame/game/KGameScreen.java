@@ -1,5 +1,9 @@
 package com.kgame.game;
 
+import android.content.Intent;
+
+import androidx.core.content.ContextCompat;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
@@ -9,7 +13,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -57,7 +60,7 @@ public class KGameScreen implements Screen {
         for (int index = 0; index < base.getInt("number"); index++)
         {
             textureMap.put(base.get("names").getString(index),
-                new Texture(Gdx.files.internal(base.get("paths").getString(index)))
+                    new Texture(Gdx.files.internal(base.get("paths").getString(index)))
             );
         }
 
@@ -233,18 +236,14 @@ public class KGameScreen implements Screen {
                     {
                         if (block == 1)
                         {
-                            /*Gdx.app.exit();
-                            System.exit(-1);*/
-
-                            if (score > highScore)
-                            {
-                                highScore = score;
-                                /*JsonWriter json = new JsonWriter(Gdx.files.internal("Configuration/configuration.json").writer(true));
-                                json.set("high-score", highScore);*/
-                            }
+                            if (score > highScore) highScore = score;
 
                             inGameMusic.stop();
-                            game.setScreen(new EndGameScreen(game, score, highScore));
+                            Intent gameActivityIntent = new Intent(AndroidLauncher.getAppContext(), EndGameActivity.class);
+                            gameActivityIntent.putExtra("Score", score);
+                            gameActivityIntent.putExtra("HighScore", highScore);
+
+                            ContextCompat.startActivity(AndroidLauncher.getAppContext(), gameActivityIntent, null);
                             dispose();
                         }
                         else if (block == 2)

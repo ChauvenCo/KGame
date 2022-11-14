@@ -2,5 +2,13 @@
 <resources>
 
     <string name="app_name">KGame</string>
+    <string name="fin_de_la_partie">Fin de la partie !</string>
+    <string name="score_label">Score :</string>
+    <string name="highscore_label">Meilleur score :</string>
+    <string name="rejouer">Rejouer</string>
+    <string name="quitter">Quitter</string>
+    <string name="bienvenue_sur_le_kgame">Bienvenue sur le KGame !</string>
+    <string name="jouer">Jouer</string>
+    <string name="copyright">Créé par Damien Boizard en 2020 et 2022</string>
 
 </resources>
