@@ -13,16 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class OptionsActivity extends AppCompatActivity {
-    Integer caller;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.options);
 
-        caller = getIntent().getIntExtra("Caller", 0);
-
-        SharedPreferences sharedPref = ((Activity)AndroidLauncher.getAppContext()).getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         CheckBox playMusicsCheckBox = findViewById(R.id.playMusics);
@@ -41,10 +37,7 @@ public class OptionsActivity extends AppCompatActivity {
 
         Button retourButton = findViewById(R.id.retour);
         retourButton.setOnClickListener(v -> {
-            Intent mainMenuActivityIntent = new Intent(this, MainMenuActivity.class);
-            if (caller == 1) mainMenuActivityIntent = new Intent(this, EndGameActivity.class);
-            finish();
-            ContextCompat.startActivity(this, mainMenuActivityIntent, null);
+            finish(); // Arrêt de l'activité OptionsActivity (retour sur MainMenuActivity ou EndGameActivity)
         });
     }
 }

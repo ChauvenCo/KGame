@@ -13,16 +13,27 @@
         android:appCategory="game"
         android:label="@string/app_name"
         tools:ignore="UnusedAttribute">
+
         <activity
-            android:name="com.kgame.game.AndroidLauncher"
+            android:name="com.kgame.game.MainMenuActivity"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.kgame.game.AndroidLauncher"
+            android:screenOrientation="landscape"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
+
         <activity
             android:name="com.kgame.game.EndGameActivity"
             android:screenOrientation="landscape"
@@ -30,13 +41,7 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
-        <activity
-            android:name="com.kgame.game.MainMenuActivity"
-            android:screenOrientation="landscape"
-            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
-            android:exported="false"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-        </activity>
+
         <activity
             android:name="com.kgame.game.OptionsActivity"
             android:screenOrientation="landscape"

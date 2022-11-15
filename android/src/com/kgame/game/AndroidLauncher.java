@@ -1,7 +1,9 @@
 package com.kgame.game;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
@@ -10,31 +12,28 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 public class AndroidLauncher extends AndroidApplication {
-	private static Context context;
+	KGame game = new KGame();
 
 	@Override
-	protected void onCreate (Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		context = this;
+	protected void onStart() {
+		super.onStart();
 
-		boolean launchGame = getIntent().getBooleanExtra("launchGame", false);
+		int state = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE).getInt("STATE", 0);
 
-		if (launchGame)
+		if (state == 0)
 		{
 			AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 			config.useAccelerometer = false; // Désactivation de l'accéléromètre
 			config.useCompass = false; // Désactivation du compas
-			initialize(new KGame(), config);
+
+			initialize(game, config); // Passage sur l'écran de jeu
 		}
-		else
-		{
-			Intent launcherActivityIntent = new Intent(this, MainMenuActivity.class);
-			finish();
-			ContextCompat.startActivity(this, launcherActivityIntent, null);
-		}
+		else if (state == 1) finish(); // Arrêt de l'activité AndroidLauncher (retour sur MainMenuActivity)
 	}
 
-	public static Context getAppContext() {
-		return context;
+	@Override
+	protected void onPause() {
+		super.onPause();
+		game.dispose();
 	}
 }

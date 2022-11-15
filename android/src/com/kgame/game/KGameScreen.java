@@ -40,11 +40,11 @@ public class KGameScreen implements Screen {
     HashMap<String, Level> levelsMap;
     Level firstMap, secondMap;
 
+    Player player;
     Music inGameMusic;
     Float mapPosition, mapMoveSpeed;
     Rectangle cell;
 
-    Rectangle player;
     Boolean reversing, noJoke;
     Float reverseIncrement;
 
@@ -64,7 +64,7 @@ public class KGameScreen implements Screen {
 
         // Récupération des options
 
-        SharedPreferences sharedPref = ((Activity)AndroidLauncher.getAppContext()).getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         showFPS = sharedPref.getBoolean("SHOWFPS", false);
         playMusics = sharedPref.getBoolean("PLAYMUSICS", true);
 
@@ -125,11 +125,12 @@ public class KGameScreen implements Screen {
 
         // Initialisation du personnage du joueur
 
-        player = new Rectangle();
-        player.width = ScreenSize.height / 12.0f;
-        player.height = ScreenSize.height / 10.0f;
-        player.x = ScreenSize.height / 12.0f;
-        player.y = cell.height;
+        player = new Player(game
+                ,ScreenSize.height / 12.0f
+                , cell.height
+                , ScreenSize.height / 12.0f
+                , ScreenSize.height / 10.0f
+        );
 
         // Initialisation des variables utiles en jeu
 
@@ -173,7 +174,7 @@ public class KGameScreen implements Screen {
 
         // Apllication de la gravité au personnage
 
-        if (reversing) reversing = applyGravity();
+        if (reversing) reversing = player.ApplyGravity(reverseIncrement, ScreenSize.height - player.GetHeight() - cell.height, cell.height);
 
         // Augmentation du score et de la vitesse de défilement chaque seconde
 
@@ -199,8 +200,8 @@ public class KGameScreen implements Screen {
 
         // Affichage du personnage
 
-        if (reverseIncrement < 0.0f) game.batch.draw(textureMap.get("Player"), player.x, player.y, player.width, player.height);
-        else game.batch.draw(textureMap.get("Player-reverse"), player.x, player.y, player.width, player.height);
+        if (reverseIncrement < 0.0f) player.Draw(textureMap.get("Player"));
+        else player.Draw(textureMap.get("Player-reverse"));
 
         // Fin de la gestion de l'affichage
 
@@ -256,36 +257,19 @@ public class KGameScreen implements Screen {
         scoreLastSecond = TimeUtils.millis();
     }
 
-    // Méthode d'application de la gravité sur le personnage
-
-    protected Boolean applyGravity() {
-        player.y += reverseIncrement;
-        if (player.y < cell.height)
-        {
-            player.y = cell.height;
-            return false;
-        }
-        if (player.y > ScreenSize.height - player.height - cell.height)
-        {
-            player.y = ScreenSize.height - player.height - cell.height;
-            return false;
-        }
-        return true;
-    }
-
-    // Méthode de renversement instantané du personnage (similaire à applyGravity, mais sans incrémentation progressive)
+    // Méthode de renversement instantané du personnage (similaire à ApplyGravity, mais sans incrémentation progressive)
 
     protected void applyReverse() {
         if (reversing)
         {
-            if (reverseIncrement > 0.0f) player.y = ScreenSize.height - player.height - cell.height;
-            else player.y = cell.height;
+            if (reverseIncrement > 0.0f) player.SetY(ScreenSize.height - player.GetHeight() - cell.height);
+            else player.SetY(cell.height);
             reversing = false;
         }
         else
         {
-            if (player.y < ScreenSize.height / 2.0f) player.y = ScreenSize.height - player.height - cell.height;
-            else player.y = cell.height;
+            if (player.GetY() < ScreenSize.height / 2.0f) player.SetY(ScreenSize.height - player.GetHeight() - cell.height);
+            else player.SetY(cell.height);
             reverseIncrement = -reverseIncrement;
         }
     }
@@ -311,19 +295,20 @@ public class KGameScreen implements Screen {
 
                     // Selon le type de bloc, un traitement est effectué
 
-                    if (player.overlaps(cell))
+                    if (player.CheckCollision(cell))
                     {
                         if (block == 1) // Cas du mur
                         {
                             if (score > highScore) highScore = score;
 
                             if (playMusics) inGameMusic.stop();
-                            Intent gameActivityIntent = new Intent(AndroidLauncher.getAppContext(), EndGameActivity.class);
+                            Intent gameActivityIntent = new Intent(MainMenuActivity.getAppContext(), EndGameActivity.class);
                             gameActivityIntent.putExtra("Score", score);
                             gameActivityIntent.putExtra("HighScore", highScore);
 
                             dispose();
-                            ContextCompat.startActivity(AndroidLauncher.getAppContext(), gameActivityIntent, null);
+                            ContextCompat.startActivity(MainMenuActivity.getAppContext(), gameActivityIntent, null); // Passage sur l'activité EndGameActivity
+                            return;
                         }
                         else if (block == 2) // Cas de la pièce
                         {

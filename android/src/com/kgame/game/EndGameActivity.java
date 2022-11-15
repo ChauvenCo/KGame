@@ -31,7 +31,7 @@ public class EndGameActivity extends AppCompatActivity {
         score = getIntent().getIntExtra("Score", 0);
         highScore = getIntent().getIntExtra("HighScore", 0);
 
-        SharedPreferences sharedPref = ((Activity)AndroidLauncher.getAppContext()).getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         int savedHighScore = sharedPref.getInt("HIGHSCORE", 0);
@@ -50,26 +50,27 @@ public class EndGameActivity extends AppCompatActivity {
 
         Button rejouerButton = findViewById(R.id.rejouer);
         rejouerButton.setOnClickListener(v -> {
-            Intent launcherActivityIntent = new Intent(this, AndroidLauncher.class);
-            launcherActivityIntent.putExtra("launchGame", true);
-            finish();
-            ContextCompat.startActivity(this, launcherActivityIntent, null);
+            //Intent launcherActivityIntent = new Intent(this, AndroidLauncher.class);
+            //launcherActivityIntent.putExtra("launchGame", true);
+
+            editor.putInt("STATE", 0);
+            editor.apply();
+
+            finish(); // Arrêt de l'activité EndGameActivité (retour sur AndroidLauncher)
+            //ContextCompat.startActivity(this, launcherActivityIntent, null);
         });
 
         Button quitterButton = findViewById(R.id.quitter);
         quitterButton.setOnClickListener(v -> {
-            menuMusic.stop();
-            menuMusic.dispose();
+            editor.putInt("STATE", 1);
+            editor.apply();
 
-            ((Activity)AndroidLauncher.getAppContext()).finish();
-            finish();
+            finish(); // Arrêt de l'activité EndGameActivité (retour sur AndroidLauncher)
         });
 
         Button optionsButton = findViewById(R.id.options);
         optionsButton.setOnClickListener(v -> {
             Intent optionsActivityIntent = new Intent(this, OptionsActivity.class);
-            optionsActivityIntent.putExtra("Caller", 1);
-            finish();
             ContextCompat.startActivity(this, optionsActivityIntent, null);
         });
     }
