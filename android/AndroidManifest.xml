@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name="com.kgame.game.AndroidLauncher"
+            android:name="com.kgame.game.GameLauncher"
             android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:exported="false"

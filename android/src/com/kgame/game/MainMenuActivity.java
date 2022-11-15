@@ -1,6 +1,5 @@
 package com.kgame.game;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,8 +9,6 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-
-import com.badlogic.gdx.Gdx;
 
 public class MainMenuActivity extends AppCompatActivity {
     private static Context context;
@@ -30,9 +27,9 @@ public class MainMenuActivity extends AppCompatActivity {
 
         Button jouerButton = findViewById(R.id.jouer);
         jouerButton.setOnClickListener(v -> {
-            Intent launcherActivityIntent = new Intent(this, AndroidLauncher.class);
+            Intent launcherActivityIntent = new Intent(this, GameLauncher.class);
             launcherActivityIntent.putExtra("launchGame", true);
-            ContextCompat.startActivity(this, launcherActivityIntent, null); // Passage sur l'activité AndroidLauncher
+            ContextCompat.startActivity(this, launcherActivityIntent, null); // Passage sur l'activité GameLauncher
         });
 
         Button optionsButton = findViewById(R.id.options);

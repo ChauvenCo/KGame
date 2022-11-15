@@ -50,14 +50,10 @@ public class EndGameActivity extends AppCompatActivity {
 
         Button rejouerButton = findViewById(R.id.rejouer);
         rejouerButton.setOnClickListener(v -> {
-            //Intent launcherActivityIntent = new Intent(this, AndroidLauncher.class);
-            //launcherActivityIntent.putExtra("launchGame", true);
-
             editor.putInt("STATE", 0);
             editor.apply();
 
-            finish(); // Arrêt de l'activité EndGameActivité (retour sur AndroidLauncher)
-            //ContextCompat.startActivity(this, launcherActivityIntent, null);
+            finish(); // Arrêt de l'activité EndGameActivité (retour sur GameLauncher)
         });
 
         Button quitterButton = findViewById(R.id.quitter);
@@ -65,7 +61,7 @@ public class EndGameActivity extends AppCompatActivity {
             editor.putInt("STATE", 1);
             editor.apply();
 
-            finish(); // Arrêt de l'activité EndGameActivité (retour sur AndroidLauncher)
+            finish(); // Arrêt de l'activité EndGameActivité (retour sur GameLauncher)
         });
 
         Button optionsButton = findViewById(R.id.options);

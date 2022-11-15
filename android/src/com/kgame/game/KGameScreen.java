@@ -244,8 +244,6 @@ public class KGameScreen implements Screen {
             inGameMusic.stop();
             inGameMusic.dispose();
         }
-
-        //game.dispose();
     }
 
     // Méthode d'augmentation du score et de la vitesse de défilement

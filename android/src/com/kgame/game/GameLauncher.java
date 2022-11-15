@@ -2,16 +2,11 @@ package com.kgame.game;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import androidx.core.content.ContextCompat;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-public class AndroidLauncher extends AndroidApplication {
+public class GameLauncher extends AndroidApplication {
 	KGame game = new KGame();
 
 	@Override
@@ -28,7 +23,7 @@ public class AndroidLauncher extends AndroidApplication {
 
 			initialize(game, config); // Passage sur l'écran de jeu
 		}
-		else if (state == 1) finish(); // Arrêt de l'activité AndroidLauncher (retour sur MainMenuActivity)
+		else if (state == 1) finish(); // Arrêt de l'activité GameLauncher (retour sur MainMenuActivity)
 	}
 
 	@Override
