@@ -57,7 +57,7 @@ public class KGameScreen implements Screen {
         game.font.getData().setScale(2.5f);
         randomGenerator = new Random();
 
-        // Gestion d ela caméra
+        // Gestion de la caméra
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, ScreenSize.width, ScreenSize.height);
@@ -77,7 +77,7 @@ public class KGameScreen implements Screen {
         for (int index = 0; index < base.getInt("number"); index++)
         {
             textureMap.put(base.get("names").getString(index),
-                    new Texture(Gdx.files.internal(base.get("paths").getString(index)))
+                new Texture(Gdx.files.internal(base.get("paths").getString(index)))
             );
         }
 
@@ -97,9 +97,7 @@ public class KGameScreen implements Screen {
         {
             base = json.parse(levelFile);
             level = new Level(base.getInt("width"), base.getInt("height"));
-            for (int index = 0; index < level.GetWidth() * level.GetHeight(); index++) {
-                level.AddCell(base.get("blocks").getInt(index));
-            }
+            for (int index = 0; index < level.GetWidth() * level.GetHeight(); index++) level.AddCell(base.get("blocks").getInt(index));
             levelsMap.put(base.getString("name"), level);
         }
 
