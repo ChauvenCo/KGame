@@ -10,5 +10,10 @@
     <string name="bienvenue_sur_le_kgame">Bienvenue sur le KGame !</string>
     <string name="jouer">Jouer</string>
     <string name="copyright">Créé par Damien Boizard en 2020 et 2022</string>
+    <string name="options">Options</string>
+    <string name="reglages">Réglez ici les options avant de jouer.</string>
+    <string name="activer_les_musiques">Activer les musiques</string>
+    <string name="retour">Retour</string>
+    <string name="afficher_les_fps">Afficher les FPS</string>
 
 </resources>

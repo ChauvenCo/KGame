@@ -1,5 +1,6 @@
 package com.kgame.game;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,7 +24,6 @@ public class EndGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.end_game);
 
-
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Sounds/KMenu.mp3"));
         menuMusic.setLooping(true);
         menuMusic.play();
@@ -31,7 +31,7 @@ public class EndGameActivity extends AppCompatActivity {
         score = getIntent().getIntExtra("Score", 0);
         highScore = getIntent().getIntExtra("HighScore", 0);
 
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = ((Activity)AndroidLauncher.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         int savedHighScore = sharedPref.getInt("HIGHSCORE", 0);
@@ -52,6 +52,7 @@ public class EndGameActivity extends AppCompatActivity {
         rejouerButton.setOnClickListener(v -> {
             Intent launcherActivityIntent = new Intent(this, AndroidLauncher.class);
             launcherActivityIntent.putExtra("launchGame", true);
+            finish();
             ContextCompat.startActivity(this, launcherActivityIntent, null);
         });
 
@@ -59,8 +60,17 @@ public class EndGameActivity extends AppCompatActivity {
         quitterButton.setOnClickListener(v -> {
             menuMusic.stop();
             menuMusic.dispose();
+
+            ((Activity)AndroidLauncher.getAppContext()).finish();
             finish();
-            System.exit(0);
+        });
+
+        Button optionsButton = findViewById(R.id.options);
+        optionsButton.setOnClickListener(v -> {
+            Intent optionsActivityIntent = new Intent(this, OptionsActivity.class);
+            optionsActivityIntent.putExtra("Caller", 1);
+            finish();
+            ContextCompat.startActivity(this, optionsActivityIntent, null);
         });
     }
 

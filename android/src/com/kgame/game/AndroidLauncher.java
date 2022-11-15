@@ -29,8 +29,8 @@ public class AndroidLauncher extends AndroidApplication {
 		else
 		{
 			Intent launcherActivityIntent = new Intent(this, MainMenuActivity.class);
-			ContextCompat.startActivity(this, launcherActivityIntent, null);
 			finish();
+			ContextCompat.startActivity(this, launcherActivityIntent, null);
 		}
 	}
 

@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:background="@color/ic_window_background_color"
     android:orientation="vertical">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
             android:fontFamily="serif"
-            android:text="@string/bienvenue_sur_le_kgame"
+            android:text="@string/options"
             android:textColor="@color/ic_title_color"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -32,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:fontFamily="serif"
-            android:text="@string/copyright"
+            android:text="@string/reglages"
             android:textColor="@color/ic_title_color"
             android:textSize="15sp"
             android:textStyle="bold" />
@@ -43,16 +42,27 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/jouer"
+        <CheckBox
+            android:id="@+id/playMusics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@drawable/border_button"
-            android:padding="10dp"
-            android:text="@string/jouer"
-            android:textColor="@color/ic_button_color"
-            android:textSize="20sp" />
+            android:text="@string/activer_les_musiques"
+            android:textColor="@color/ic_title_color"
+            android:textSize="20sp"
+            android:checked="true"
+            android:buttonTint="@color/ic_background_color"/>
+
+        <CheckBox
+            android:id="@+id/showFPS"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/afficher_les_fps"
+            android:textColor="@color/ic_title_color"
+            android:textSize="20sp"
+            android:checked="false"
+            android:buttonTint="@color/ic_background_color"/>
     </LinearLayout>
 
     <LinearLayout
@@ -61,30 +71,13 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/options"
+            android:id="@+id/retour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="@drawable/border_button"
             android:padding="10dp"
-            android:text="@string/options"
-            android:textColor="@color/ic_button_color"
-            android:textSize="20sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/quitter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/border_button"
-            android:padding="10dp"
-            android:text="@string/quitter"
+            android:text="@string/retour"
             android:textColor="@color/ic_button_color"
             android:textSize="20sp" />
     </LinearLayout>
