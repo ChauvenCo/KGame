@@ -24,15 +24,18 @@ public class EndGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.end_game);
 
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Sounds/KMenu.mp3"));
-        menuMusic.setLooping(true);
-        menuMusic.play();
-
         score = getIntent().getIntExtra("Score", 0);
         highScore = getIntent().getIntExtra("HighScore", 0);
 
         SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
+
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("Sounds/KMenu.mp3"));
+        if (sharedPref.getBoolean("PLAYMUSICS", true))
+        {
+            menuMusic.setLooping(true);
+            menuMusic.play();
+        }
 
         int savedHighScore = sharedPref.getInt("HIGHSCORE", 0);
 

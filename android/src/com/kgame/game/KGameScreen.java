@@ -36,9 +36,14 @@ public class KGameScreen implements Screen {
     Integer highScore, score;
     Long scoreLastSecond;
 
+    // Jeu original
     FileHandle[] levelsFileList;
     HashMap<String, Level> levelsMap;
     Level firstMap, secondMap;
+
+    // Jeu par niveaux
+    String levelPath;
+    Level levelContent;
 
     Player player;
     Music inGameMusic;
@@ -49,6 +54,7 @@ public class KGameScreen implements Screen {
     Float reverseIncrement;
 
     Boolean boostActivated, voidActivated, showFPS, playMusics;
+    Integer gameMode;
 
     // Constructeur de l'objet, initialisation des variables de jeu
 
@@ -67,17 +73,20 @@ public class KGameScreen implements Screen {
         SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         showFPS = sharedPref.getBoolean("SHOWFPS", false);
         playMusics = sharedPref.getBoolean("PLAYMUSICS", true);
+        gameMode = sharedPref.getInt("PLAYMODE", 2);
+        levelPath = sharedPref.getString("LEVELPATH", "");
+
+        JsonReader json = new JsonReader();
+        JsonValue base = json.parse(Gdx.files.internal("Configuration/configuration.json"));
 
         // Récupération du contenu du fichier de configuration
 
         textureMap = new HashMap<>();
-        JsonReader json = new JsonReader();
-        JsonValue base = json.parse(Gdx.files.internal("Configuration/configuration.json"));
 
         for (int index = 0; index < base.getInt("number"); index++)
         {
             textureMap.put(base.get("names").getString(index),
-                new Texture(Gdx.files.internal(base.get("paths").getString(index)))
+                    new Texture(Gdx.files.internal(base.get("paths").getString(index)))
             );
         }
 
@@ -87,24 +96,40 @@ public class KGameScreen implements Screen {
         score = 0;
         scoreLastSecond = TimeUtils.millis();
 
-        // Récupération du contenu des maps
+        // Récupération du contenu des maps selon le type de jeu
 
-        levelsMap = new HashMap<>();
-        Level level;
-        levelsFileList = Gdx.files.internal("Maps").list();
-
-        for (FileHandle levelFile: levelsFileList)
+        if (gameMode == 0) // Jeu par niveaux
         {
-            base = json.parse(levelFile);
-            level = new Level(base.getInt("width"), base.getInt("height"));
-            for (int index = 0; index < level.GetWidth() * level.GetHeight(); index++) level.AddCell(base.get("blocks").getInt(index));
-            levelsMap.put(base.getString("name"), level);
+            base = json.parse(Gdx.files.internal(levelPath));
+            levelContent = new Level(base.getInt("width"), base.getInt("height"));
+            for (int index = 0; index < levelContent.GetWidth() * levelContent.GetHeight(); index++) levelContent.AddCell(base.get("blocks").getInt(index));
+        }
+        /*else if (gameMode == 1) // Jeu procédural
+        {
+
+        }*/
+        else if (gameMode == 2) // Jeu original sans fin
+        {
+            levelsMap = new HashMap<>();
+            Level level;
+            levelsFileList = Gdx.files.internal("Maps").list();
+
+            for (FileHandle levelFile: levelsFileList)
+            {
+                base = json.parse(levelFile);
+                level = new Level(base.getInt("width"), base.getInt("height"));
+                for (int index = 0; index < level.GetWidth() * level.GetHeight(); index++) level.AddCell(base.get("blocks").getInt(index));
+                levelsMap.put(base.getString("name"), level);
+            }
+
+            // Gestion des deux premières maps (fixes pour toutes les parties)
+
+            firstMap = levelsMap.get("Premium-Empty");
+            secondMap = levelsMap.get("Premium-BoostDefault");
         }
 
-        // Gestion des deux premières maps (fixes pour toutes les parties)
+        // Initialisation des position et vitesse initiales
 
-        firstMap = levelsMap.get("Premium-Empty");
-        secondMap = levelsMap.get("Premium-BoostDefault");
         mapPosition = 0.0f;
         mapMoveSpeed = ScreenSize.height / 240.0f;
 
@@ -165,11 +190,31 @@ public class KGameScreen implements Screen {
         // Gestion du mouvement des maps
 
         mapPosition += mapMoveSpeed;
-        if (mapPosition >= firstMap.GetWidth() * cell.width)
+
+        if (gameMode == 0)
         {
-            mapPosition = 0.0f;
-            firstMap = secondMap;
-            secondMap = (Level)levelsMap.values().toArray()[randomGenerator.nextInt(levelsMap.values().toArray().length)];
+            if (mapPosition >= levelContent.GetWidth() * cell.width - ScreenSize.width)
+            {
+                if (playMusics) inGameMusic.stop();
+                Intent gameActivityIntent = new Intent(MainMenuActivity.getAppContext(), EndGameActivity.class);
+
+                dispose();
+                ContextCompat.startActivity(MainMenuActivity.getAppContext(), gameActivityIntent, null); // Passage sur l'activité EndGameActivity
+                return;
+            }
+        }
+        /*else if (gameMode == 1)
+        {
+
+        }*/
+        else if (gameMode == 2)
+        {
+            if (mapPosition >= firstMap.GetWidth() * cell.width)
+            {
+                mapPosition = 0.0f;
+                firstMap = secondMap;
+                secondMap = (Level)levelsMap.values().toArray()[randomGenerator.nextInt(levelsMap.values().toArray().length)];
+            }
         }
 
         // Apllication de la gravité au personnage
@@ -187,15 +232,23 @@ public class KGameScreen implements Screen {
         // Affichage des maps actuelles
 
         try {
-            drawMap(firstMap, 0.0f - mapPosition);
-            drawMap(secondMap, firstMap.GetWidth() * cell.width - mapPosition);
+            if (gameMode == 0) drawMap(levelContent, 0.0f - mapPosition);
+            /*else if (gameMode == 1)
+            {
+
+            }*/
+            else if (gameMode == 2)
+            {
+                drawMap(firstMap, 0.0f - mapPosition);
+                drawMap(secondMap, firstMap.GetWidth() * cell.width - mapPosition);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // Affichage des textes du score et du nombre de FPS
 
-        game.font.draw(game.batch, "Score : " + score, ScreenSize.width * 0.05f, ScreenSize.height * 0.98f);
+        if (gameMode == 1 || gameMode == 2) game.font.draw(game.batch, "Score : " + score, ScreenSize.width * 0.05f, ScreenSize.height * 0.98f);
         if (showFPS) game.font.draw(game.batch, "FPS : " + Gdx.graphics.getFramesPerSecond(), ScreenSize.width * 0.85f, ScreenSize.height * 0.98f);
 
         // Affichage du personnage

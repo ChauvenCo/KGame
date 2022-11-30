@@ -9,6 +9,9 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 public class MainMenuActivity extends AppCompatActivity {
     private static Context context;
@@ -25,10 +28,24 @@ public class MainMenuActivity extends AppCompatActivity {
         editor.putInt("STATE", 0);
         editor.apply();
 
-        Button jouerButton = findViewById(R.id.jouer);
-        jouerButton.setOnClickListener(v -> {
+        Button jouerLevelsButton = findViewById(R.id.jouerLevels);
+        jouerLevelsButton.setOnClickListener(v -> {
+            Intent levelsActivityIntent = new Intent(this, LevelsMenuActivity.class);
+            levelsActivityIntent.putExtra("PLAYMODE", 0);
+            ContextCompat.startActivity(this, levelsActivityIntent, null); // Passage sur l'activité LevelsMenuActivity
+        });
+
+        /*Button jouerEndlessButton = findViewById(R.id.jouerEndless);
+        jouerEndlessButton.setOnClickListener(v -> {
             Intent launcherActivityIntent = new Intent(this, GameLauncher.class);
-            launcherActivityIntent.putExtra("launchGame", true);
+            launcherActivityIntent.putExtra("PLAYMODE", 1);
+            ContextCompat.startActivity(this, launcherActivityIntent, null); // Passage sur l'activité GameLauncher
+        });*/
+
+        Button jouerOriginalButton = findViewById(R.id.jouerOriginal);
+        jouerOriginalButton.setOnClickListener(v -> {
+            Intent launcherActivityIntent = new Intent(this, GameLauncher.class);
+            launcherActivityIntent.putExtra("PLAYMODE", 2);
             ContextCompat.startActivity(this, launcherActivityIntent, null); // Passage sur l'activité GameLauncher
         });
 
@@ -51,6 +68,7 @@ public class MainMenuActivity extends AppCompatActivity {
         int state = this.getPreferences(Context.MODE_PRIVATE).getInt("STATE", 0);
         if (state == 1) finish(); // Arrêt de l'activité MainMenuActivity (arrêt de l'application)
     }
+
 
     public static Context getAppContext() {
         return context;

@@ -2,6 +2,7 @@ package com.kgame.game;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
@@ -13,7 +14,14 @@ public class GameLauncher extends AndroidApplication {
 	protected void onStart() {
 		super.onStart();
 
-		int state = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE).getInt("STATE", 0);
+		SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = sharedPref.edit();
+
+		int state = sharedPref.getInt("STATE", 0);
+
+		editor.putInt("PLAYMODE", getIntent().getIntExtra("PLAYMODE", 0));
+		editor.putString("LEVELPATH", getIntent().getStringExtra("LEVELPATH"));
+		editor.apply();
 
 		if (state == 0)
 		{
@@ -23,7 +31,7 @@ public class GameLauncher extends AndroidApplication {
 
 			initialize(game, config); // Passage sur l'écran de jeu
 		}
-		else if (state == 1) finish(); // Arrêt de l'activité GameLauncher (retour sur MainMenuActivity)
+		else if (state == 1) finish(); // Arrêt de l'activité GameLauncher (retour sur MainMenuActivity ou LevelsMenuActivity)
 	}
 
 	@Override

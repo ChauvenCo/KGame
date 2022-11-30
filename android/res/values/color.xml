@@ -4,5 +4,6 @@
     <color name="ic_window_background_color">#474747</color>
     <color name="ic_title_color">#DEDDDDDD</color>
     <color name="ic_text_color">#FFCCCCCC</color>
+    <color name="ic_info_color">#FFAAAAAA</color>
     <color name="ic_button_color">#FFAAAAAA</color>
 </resources>

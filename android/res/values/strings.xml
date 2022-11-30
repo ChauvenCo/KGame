@@ -15,5 +15,12 @@
     <string name="activer_les_musiques">Activer les musiques</string>
     <string name="retour">Retour</string>
     <string name="afficher_les_fps">Afficher les FPS</string>
+    <string name="levels">Levels</string>
+    <string name="endless">Endless</string>
+    <string name="original">Original</string>
+    <string name="lancez_une_partie">Lancez une partie :</string>
+    <string name="choix_niveau">Choisissez un level à jouer.</string>
+    <string name="level1">1</string>
+    <string name="level2">2</string>
 
 </resources>
