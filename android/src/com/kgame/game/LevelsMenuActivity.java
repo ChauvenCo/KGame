@@ -46,6 +46,6 @@ public class LevelsMenuActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref = ((Activity)MainMenuActivity.getAppContext()).getPreferences(Context.MODE_PRIVATE);
         int state = sharedPref.getInt("STATE", 0);
-        if (state == 1) finish(); // Arrêt de l'activité MainMenuActivity (arrêt de l'application)
+        if (state == 1 || state == 2) finish(); // Arrêt de l'activité MainMenuActivity (arrêt de l'application)
     }
 }

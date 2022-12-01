@@ -31,7 +31,7 @@ public class GameLauncher extends AndroidApplication {
 
 			initialize(game, config); // Passage sur l'écran de jeu
 		}
-		else if (state == 1) finish(); // Arrêt de l'activité GameLauncher (retour sur MainMenuActivity ou LevelsMenuActivity)
+		else if (state == 1 || state == 2) finish(); // Arrêt de l'activité GameLauncher (retour sur MainMenuActivity ou LevelsMenuActivity)
 	}
 
 	@Override

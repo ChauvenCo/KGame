@@ -9,9 +9,6 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 
 public class MainMenuActivity extends AppCompatActivity {
     private static Context context;
@@ -67,6 +64,12 @@ public class MainMenuActivity extends AppCompatActivity {
 
         int state = this.getPreferences(Context.MODE_PRIVATE).getInt("STATE", 0);
         if (state == 1) finish(); // Arrêt de l'activité MainMenuActivity (arrêt de l'application)
+        else
+        {
+            SharedPreferences.Editor editor = this.getPreferences(Context.MODE_PRIVATE).edit();
+            editor.putInt("STATE", 0);
+            editor.apply();
+        }
     }
 
 

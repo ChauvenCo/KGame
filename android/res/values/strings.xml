@@ -22,5 +22,7 @@
     <string name="choix_niveau">Choisissez un level à jouer.</string>
     <string name="level1">1</string>
     <string name="level2">2</string>
+    <string name="LevelEndLabel">Fin du Level !</string>
+    <string name="menu_principal">Menu principal</string>
 
 </resources>
